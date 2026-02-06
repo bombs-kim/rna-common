@@ -1,7 +1,11 @@
+import base64
+import json
 import re
 
 from steps_project_engine.manage import get_container_data_dir, create_debug_process
 from utils.misc import get_function_calls
+
+from utils.debug_tree_source import BUILD_VAR_TREE_SOURCE as _BUILD_VAR_TREE_SOURCE
 
 PDB_PROMPT = "(Pdb) "
 CALL_PATTERN = "--Call--"
@@ -116,6 +120,17 @@ class DebugSession:
         self.execution_history = []
         self.process = create_debug_process(user_id, project_id)
 
+        _ = self._read_user_and_pdb_output()
+        self._inject_build_var_tree()
+
+    def _inject_build_var_tree(self):
+        """Inject build_var_tree into debuggee global scope so we can call it via pdb_p."""
+        b64 = base64.b64encode(_BUILD_VAR_TREE_SOURCE.encode()).decode()
+        cmd = '!exec(__import__("base64").b64decode({}).decode())\n'.format(
+            json.dumps(b64)
+        )
+        self.process.stdin.write(cmd)
+        self.process.stdin.flush()
         _ = self._read_user_and_pdb_output()
 
     def _finish(self):
@@ -280,8 +295,6 @@ class DebugSession:
         Handles cases where one line has multiple function calls (e.g., a = fn2(fn1())).
         Returns a dictionary of captured function calls with their parameters and return values.
         """
-        from utils.misc import shorten_repr
-
         captured_calls = []
 
         program_output_list = []
@@ -313,7 +326,8 @@ class DebugSession:
                 # then all the local variables are only function parameters,
                 # not variables defined inside the function body.
                 function_name = new_frames[-1]["function"]
-                params = self.get_local_vars()
+                vars = self.get_local_vars()
+                params = {name: vars[name]["repr_tree"]["value"] for name in vars}
 
                 # Check if we're in a generator function
                 is_in_generator = self._is_in_generator_function()
@@ -330,8 +344,7 @@ class DebugSession:
                     break
                 else:
                     # For regular functions, step out and capture return value
-                    program_output, pdb_output, _retval_repr = self.pdb_return()
-                    retval_repr = shorten_repr(_retval_repr)
+                    program_output, pdb_output, retval_repr = self.pdb_return()
                     program_output_list.append(program_output)
 
                     captured_calls.append(
@@ -404,16 +417,22 @@ class DebugSession:
             "traceback": traceback_frames,
         }
 
-    def get_local_vars(self):
-        from utils.misc import shorten_repr
-
-        to_eval = self.pdb_p(
-            "{k: repr(v) for k, v in locals().items() if not k.startswith('__')}"
+    def get_local_vars(self, max_depth=4, max_children=64):
+        """Return current frame locals as a dict: var_name -> {"id": int, "repr_tree": node}."""
+        expr = "__import__('json').dumps(build_var_tree(locals(), %d, %d))" % (
+            max_depth,
+            max_children,
         )
-        vars = eval(to_eval.strip())
-        # Both key and value should be immutable. They are already immutable since they are strings.
-        vars = {k: shorten_repr(v) for k, v in vars.items()}
-        return vars
+        raw = self.pdb_p(expr).strip()
+        # p prints the repr of the result, so we get a quoted/escaped string; eval to get the string
+        try:
+            json_str = eval(raw)
+        except Exception:
+            return {}
+        try:
+            return json.loads(json_str)
+        except json.JSONDecodeError:
+            return {}
 
     def _is_in_generator_function(self):
         """

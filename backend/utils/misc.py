@@ -154,15 +154,3 @@ def get_function_ranges(code: str) -> list[dict]:
         result[i]["endLine"] = end
 
     return result
-
-
-def shorten_repr(obj_repr, max_length: int = 256) -> str:
-    assert isinstance(
-        obj_repr, str
-    ), f"obj_repr should be a representation of an object, not the object itselfs"
-    if len(obj_repr) <= max_length:
-        return obj_repr
-
-    truncate_length = max_length - 5
-    half_truncate_length = truncate_length // 2
-    return obj_repr[:half_truncate_length] + " ... " + obj_repr[-half_truncate_length:]
