@@ -1,0 +1,6 @@
+services:
+  steps-project:
+    image: steps-project
+    build:
+      context: .
+      dockerfile: Dockerfile

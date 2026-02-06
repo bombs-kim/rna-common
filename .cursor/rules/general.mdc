@@ -1,0 +1,12 @@
+---
+alwaysApply: true
+---
+
+# Rules
+
+* The top priority in development is to minimize code growth. To make life easier for future developers, keep code concise and eliminate unnecessary logic.
+* Answer in English
+* When you leave comments, use English
+* Change only explicitly requested things. If you see more things that need to change accordingly, always ask first
+* If I ask a question, don’t start coding right away — just answer the question.
+  * In particular, if I start with "discuss", do not code.

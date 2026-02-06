@@ -1,0 +1,11 @@
+playground/*
+demos/*
+sample_code/*
+
+*/node_modules/
+.vscode
+backend/media/*
+backend/sample_code/*
+backend/playground.py
+.DS_Store
+project_containers/
