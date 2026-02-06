@@ -50,8 +50,7 @@
                 onCancel={onCancelStringEdit}
               />
             {/key}
-          {/if}
-          <span
+          {/if}<span
             class="hl hl-{part.type.replace(/\./g, '-')}"
             role="presentation">{text.slice(part.start, part.end)}</span
           >{#if part.type === "string" && stringEditMode}
