@@ -230,8 +230,8 @@ body {
   cursor: default;
 }
 .string-edit-icon svg {
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
 }
 .string-edit-icon:hover {
   background-color: var(--bg-quaternary);

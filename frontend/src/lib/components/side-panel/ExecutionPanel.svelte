@@ -1,5 +1,6 @@
 <script>
   import wsManager from "$lib/utils/websocket-manager.js";
+  import ExecutionStepIcons from "$lib/components/icons/ExecutionStepIcons.svelte";
 
   export let explanation = "";
   export let isExplanationLoading = false;
@@ -27,12 +28,26 @@
   }
 </script>
 
+<ExecutionStepIcons />
+
 <div class="execution-content">
   <div class="button-group">
-    <button class="button step-button" disabled={isFinished} on:click={stepOver}>Step Over</button>
-    <button class="button step-button" disabled={isFinished || !canStepInto} on:click={stepInto}>Step Into</button>
-    <button class="button step-button" disabled={isFinished || !canStepOut} on:click={stepOut}>Step Out</button>
-    <button class="button step-button" on:click={restart}>Restart</button>
+    <button class="button step-button" disabled={isFinished} on:click={stepOver} title="Step over (next line)">
+      <svg class="step-icon" aria-hidden="true"><use href="#icon-step-next"/></svg>
+      Next
+    </button>
+    <button class="button step-button" disabled={isFinished || !canStepInto} on:click={stepInto} title="Step into">
+      <svg class="step-icon" aria-hidden="true"><use href="#icon-step-into"/></svg>
+      Into
+    </button>
+    <button class="button step-button" disabled={isFinished || !canStepOut} on:click={stepOut} title="Step out">
+      <svg class="step-icon" aria-hidden="true"><use href="#icon-step-out"/></svg>
+      Out
+    </button>
+    <button class="button step-button" on:click={restart} title="Restart">
+      <svg class="step-icon" aria-hidden="true"><use href="#icon-step-restart"/></svg>
+      Restart
+    </button>
   </div>
 
   <div class="output-panel">
@@ -103,6 +118,13 @@
     margin-bottom: var(--spacing-md);
   }
 
+  .step-icon {
+    width: 2.03em;
+    height: 2.03em;
+    vertical-align: -0.3em;
+    margin-right: 0.53em;
+  }
+
   .step-button {
     background-color: var(--accent-green);
     color: var(--text-white);
@@ -112,6 +134,9 @@
     margin: 0;
     flex: 1;
     transition: background-color var(--transition-base);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .step-button:hover:not(:disabled) {

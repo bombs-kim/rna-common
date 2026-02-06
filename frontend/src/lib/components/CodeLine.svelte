@@ -1,5 +1,5 @@
 <script>
-  import StringEditIcon from "./StringEditIcon.svelte";
+  import StringEditIcon from "$lib/components/icons/StringEditIcon.svelte";
   import StringEditPopover from "./StringEditPopover.svelte";
 
   export let text = "";
