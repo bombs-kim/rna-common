@@ -19,9 +19,7 @@
   let status = "Disconnected";
   let explanation = "";
   let isExplanationLoading = false;
-  let variables = {};
   let output = [];
-  let systemMessage = "";
   let conversationHistory = [];
   let isAgentLoading = false;
   let canStepInto = false;
@@ -59,8 +57,6 @@
           data.can_step_out
         );
         currentLine = data.line_number || 0;
-        variables = data.local_vars || {};
-        systemMessage = data.system_message || "";
         canStepInto = data.can_step_into;
         canStepOut = data.can_step_out;
         // Check if this is a return state based on system_message
@@ -88,9 +84,7 @@
         }
       },
       handleRestart: () => {
-        variables = {};
         output = [];
-        systemMessage = "";
         explanation = "";
         isExplanationLoading = false;
         canStepInto = false;
@@ -104,7 +98,6 @@
         if (data.program_output && typeof data.program_output === "string") {
           output = data.program_output.split("\n");
         }
-        systemMessage = data.system_message || "Program execution finished";
       },
       handleAgentResult: async (data) => {
         // Reload conversation history and code when agent result is received
@@ -271,9 +264,7 @@
       <ExecutionPanel
         {explanation}
         {isExplanationLoading}
-        {variables}
         {output}
-        {systemMessage}
         {canStepInto}
         {canStepOut}
         {isFinished}

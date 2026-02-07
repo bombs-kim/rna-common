@@ -4,9 +4,7 @@
 
   export let explanation = "";
   export let isExplanationLoading = false;
-  export let variables = {};
   export let output = [];
-  export let systemMessage = "";
   export let canStepInto = false;
   export let canStepOut = false;
   export let isFinished = false;
@@ -75,33 +73,6 @@
         {explanation}
       {:else}
         <span class="placeholder">No explanation available</span>
-      {/if}
-    </div>
-  </div>
-
-  <div class="system-message-panel">
-    <h4>System Message</h4>
-    <div class="system-message-display">
-      {#if systemMessage}
-        {systemMessage}
-      {:else}
-        <span class="placeholder">No system message</span>
-      {/if}
-    </div>
-  </div>
-
-  <div class="variables-panel">
-    <h4>Variables</h4>
-    <div class="variables-display">
-      {#if Object.keys(variables).length === 0}
-        <span class="placeholder">No variables</span>
-      {:else}
-        {#each Object.entries(variables) as [name, value]}
-          <div class="variable-item">
-            <strong>{name}:</strong>
-            {String(value)}
-          </div>
-        {/each}
       {/if}
     </div>
   </div>
@@ -185,9 +156,7 @@
   }
 
   .output-panel,
-  .explanation-panel,
-  .system-message-panel,
-  .variables-panel {
+  .explanation-panel {
     margin-top: var(--spacing-md);
     background-color: var(--bg-primary);
     border: 1px solid var(--border-color);
@@ -201,31 +170,15 @@
     height: 75px;
   }
 
-  .variables-panel {
-    height: 150px;
-  }
-
   .output-panel {
     height: 200px;
   }
 
-  .system-message-panel {
-    height: 75px;
-  }
-
   .explanation-display,
-  .variables-display,
-  .output-display,
-  .system-message-display {
+  .output-display {
     flex: 1;
     overflow-y: auto;
     min-height: 0;
   }
 
-  .variable-item {
-    margin: var(--spacing-sm) 0;
-    padding: var(--spacing-sm);
-    background-color: var(--bg-tertiary);
-    border-radius: var(--radius-sm);
-  }
 </style>
